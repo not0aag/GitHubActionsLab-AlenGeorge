@@ -1,208 +1,79 @@
-# GitHub Actions Lab #4 - Automated Workflows
+GitHub Actions Lab 4 - Automated Workflows
 
-**Student Name:** Alen George  
-**Student ID:** 991716469  
-**Repository:** GitHubActionsLab-AlenGeorge
+Student name: Alen George
+Student ID: 991716469
+Repository: GitHubActionsLab-AlenGeorge
 
----
+Overview
+This repo contains three GitHub Actions workflows that demonstrate:
 
-## Overview
+- job dependencies (sequential jobs)
+- environment variables and secrets
+- multi-platform jobs running in parallel
 
-This lab demonstrates three GitHub Actions workflows that I created to understand CI/CD concepts. Each workflow focuses on a different aspect of automation: job dependencies, environment variables with secrets, and multi-platform testing.
+Workflows
 
----
+1. Job dependencies (dependent-jobs.yml)
 
-## Workflows
+- Trigger: push to main
+- Jobs: build -> test -> deploy, each waits for the previous one (uses "needs")
+- Behavior: if one fails, later jobs do not run
+- Purpose: show a simple ordered CI/CD pipeline
 
-### Workflow 1: Job Dependencies (`dependent-jobs.yml`)
+2. Environment variables and secrets (env-and-secrets.yml)
 
-This workflow shows how jobs can run in sequence using the `needs` keyword. It simulates a typical CI/CD pipeline.
+- Trigger: workflow_dispatch (manual)
+- Env scopes:
+  - workflow level (example: AWS_REGION=us-east-1)
+  - job level (example: DEPLOYMENT_NAME)
+  - step level (example: DEPLOYMENT_STAGE)
+- Secrets used: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY (masked as \*\*\* in logs)
+- Purpose: show variable scope and safe secret handling
 
-**How it works:**
+3. Multi-platform testing (multi-platform.yml)
 
-- Triggers automatically when I push code to the main branch
-- Three jobs run in order: build → test → deploy
-- Each job waits for the previous one to finish successfully
-- If any job fails, the next ones won't run
+- Trigger: pull_request
+- Runs three independent jobs in parallel on ubuntu-latest, windows-latest, and macos-latest
+- Each job prints system info and writes a small test file
+- Purpose: verify behavior across operating systems without waiting sequentially
 
-The `needs` keyword is what makes this sequential execution possible. Without it, all three jobs would run at the same time.
+Key concepts
 
----
-### Workflow 2: Environment Variables and Secrets (`env-and-secrets.yml`)
+- needs: lets one job depend on another so they run in order
+- runs-on: selects the runner OS (ubuntu-latest, windows-latest, macos-latest)
+- env scope: variables defined at workflow, job, or step scope are only visible within that scope and below
+- secrets: stored in repository settings; automatically masked in logs; do not echo them
 
-This workflow demonstrates how to use environment variables at different scopes and how GitHub handles sensitive information like API keys.
+Testing results
 
-**How it works:**
+- Workflow 1 ran on push and executed build, then test, then deploy in order
+- Workflow 2 ran when manually triggered; env visibility behaved as expected; secrets were masked
+- Workflow 3 ran on a pull request; all three OS jobs executed in parallel and succeeded
 
-- I trigger this one manually from the Actions tab
-- It uses three levels of environment variables:
-  - **Workflow level**: Available everywhere (like `AWS_REGION: us-east-1`)
-  - **Job level**: Only available in that specific job (like `DEPLOYMENT_NAME`)
-  - **Step level**: Only available in that specific step (like `DEPLOYMENT_STAGE`)
-- It also uses secrets (`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`) which GitHub automatically masks with `***` in the logs so they're never exposed
-
-The key learning here was understanding variable scope—variables defined at a lower level (like step) aren't accessible at higher levels or in other steps.
-
----
-
-### Workflow 3: Multi-Platform Testing (`multi-platform.yml`)
-
-This workflow tests code on three different operating systems at the same time.
-
-**How it works:**
-
-- Triggers when I create a pull request
-- Three jobs run in parallel (not one after another):
-  - **Ubuntu** (Linux): Uses bash commands like `uname -a` and `cat`
-  - **Windows**: Uses PowerShell commands like `systeminfo` and `Write-Host`
-  - **macOS**: Uses macOS-specific commands like `sw_vers`
-- Each job displays system information and creates a test file
-
-Since there's no `needs` keyword here, all three jobs start at the same time. This is useful for making sure code works on different platforms without waiting for each test to finish one by one.
----
-
-## Key Concepts
-
-### 1. The `needs` Keyword (Job Dependencies)
-Variables can be defined at three levels:
-
-- **Workflow level**: Everyone can see it
-- **Step level**: Only that step can see it
-
-5. **Configure Secrets:**
-
-   - Go to Settings → Secrets and variables → Actions
-   - Add `AWS_ACCESS_KEY_ID` (dummy value: `AKIAIOSFODNN7EXAMPLE`)
-   - Add `AWS_SECRET_ACCESS_KEY` (dummy value: `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY`)
-
-6. **Commit and Push:**
-
-   ```bash
-   git add .
-   git commit -m "Add GitHub Actions workflows"
-   git push origin main
-   ```
-
-7. **Test Workflows:**
-   - Workflow 1: Runs automatically on push
-   - Workflow 2: Trigger manually from Actions tab
-   - Workflow 3: Create a branch and pull request
-
----
-
-## Testing Results
-
-### Workflow 1: Job Dependencies ✓
-
-- Build job executed first
-- Test job waited for build to complete
-- Deploy job waited for test to complete
-- All jobs completed successfully
-- Dependency visualization showed correct flow
-
-### Workflow 2: Environment Variables and Secrets ✓
-
-- Manual trigger worked correctly
-- Workflow-level variables accessible in all steps
-- Job-level variables accessible only in job scope
-- Step-level variables accessible only in step scope
-- Secrets properly masked as \*\*\* in logs
-- All variable scopes demonstrated correctly
-
-### Workflow 3: Multi-Platform Testing ✓
-
-- Pull request trigger worked correctly
-- All three jobs started simultaneously (parallel)
-- Ubuntu job completed with Linux commands
-- Windows job completed with PowerShell commands
-- macOS job completed with macOS commands
-- Test files created successfully on all platforms
-
----
-
-## Repository Structure
-
-```
+Repository structure
 GitHubActionsLab-AlenGeorge/
-├── .github/
-│   └── workflows/
-│       ├── dependent-jobs.yml
-│       ├── env-and-secrets.yml
-│       └── multi-platform.yml
-├── README.md
-└── (other test files)
-```
+.github/
+workflows/
+dependent-jobs.yml
+env-and-secrets.yml
+multi-platform.yml
+README.md
+(test files used during runs)
 
----
+Learning outcomes
 
-## Learning Outcomes
+- Created and ran GitHub Actions workflows
+- Used job dependencies to control order
+- Scoped environment variables correctly
+- Handled secrets safely
+- Ran jobs on multiple operating systems in parallel
+- Read logs to debug and verify runs
 
-Through this lab, I gained hands-on experience with:
+References
+GitHub Actions documentation: https://docs.github.com/en/actions
+Workflow syntax reference: https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions
+GitHub Actions marketplace: https://github.com/marketplace?type=actions
 
-1. **GitHub Actions Fundamentals:**
-
-   - Creating workflow files
-   - Understanding YAML syntax
-   - Configuring triggers
-   - Managing jobs and steps
-
-2. **Job Orchestration:**
-
-   - Creating job dependencies with `needs`
-   - Understanding parallel vs sequential execution
-   - Building CI/CD pipelines
-
-3. **Environment Management:**
-
-   - Using environment variables at different scopes
-   - Understanding variable scope hierarchy
-   - Managing configuration across workflows
-
-4. **Security:**
-
-   - Storing sensitive data as secrets
-   - Understanding automatic secret masking
-   - Best practices for credential management
-
-5. **Cross-Platform Development:**
-
-   - Testing code on multiple operating systems
-   - Understanding platform-specific commands
-   - Ensuring cross-platform compatibility
-
-6. **Debugging:**
-
-   - Reading workflow logs
-   - Identifying and fixing errors
-   - Understanding error messages
-
-7. **DevOps Practices:**
-   - Continuous Integration concepts
-   - Automated testing workflows
-   - Deployment pipelines
-
----
-
-## Conclusion
-
-This lab provided practical experience with GitHub Actions, a powerful CI/CD platform. The three workflows demonstrate key concepts that are essential for modern software development:
-
-- **Workflow 1** shows how to create ordered pipelines where each stage depends on the previous one
-- **Workflow 2** demonstrates proper configuration management and secret handling
-- **Workflow 3** shows how to ensure code works across different platforms
-
-These skills are directly applicable to real-world software development and DevOps practices.
-
----
-
-## References
-
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Workflow Syntax Reference](https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions)
-- [GitHub Actions Marketplace](https://github.com/marketplace?type=actions)
-
----
-
-**Completed by:** Alen George  
-**Student ID:** 991716469  
-**Date:** November 2, 2025
+Completed by: Alen George
+Student ID: 991716469
+Date: November 2, 2025
