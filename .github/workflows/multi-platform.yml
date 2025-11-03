@@ -1,0 +1,124 @@
+name: Workflow 3 - Multi-Platform Testing
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ubuntu-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Display Ubuntu system information
+        run: |
+          echo "================================"
+          echo "Ubuntu System Information"
+          echo "================================"
+          echo "Operating System Details:"
+          uname -a
+          echo ""
+          echo "OS Release Information:"
+          cat /etc/os-release
+          echo ""
+          echo "Testing by: Alen George (991716469)"
+
+      - name: Create and display test file
+        run: |
+          echo "================================"
+          echo "Creating Ubuntu Test File"
+          echo "================================"
+          echo "Hello from Ubuntu!" > ubuntu-test.txt
+          echo "Student: Alen George" >> ubuntu-test.txt
+          echo "Student ID: 991716469" >> ubuntu-test.txt
+          echo "Platform: Linux/Ubuntu" >> ubuntu-test.txt
+          echo ""
+          echo "File contents:"
+          cat ubuntu-test.txt
+
+      - name: Run Ubuntu-specific commands
+        run: |
+          echo "Running Ubuntu-specific commands..."
+          echo "Current user: $(whoami)"
+          echo "Current directory: $(pwd)"
+          echo "Disk usage:"
+          df -h | head -5
+
+  windows-job:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Display Windows system information
+        run: |
+          Write-Host "================================"
+          Write-Host "Windows System Information"
+          Write-Host "================================"
+          Write-Host "Operating System Details:"
+          systeminfo | Select-String "OS Name","OS Version","System Type"
+          Write-Host ""
+          Write-Host "Testing by: Alen George (991716469)"
+
+      - name: Create and display test file
+        run: |
+          Write-Host "================================"
+          Write-Host "Creating Windows Test File"
+          Write-Host "================================"
+          "Hello from Windows!" | Out-File -FilePath windows-test.txt
+          "Student: Alen George" | Out-File -FilePath windows-test.txt -Append
+          "Student ID: 991716469" | Out-File -FilePath windows-test.txt -Append
+          "Platform: Windows" | Out-File -FilePath windows-test.txt -Append
+          Write-Host ""
+          Write-Host "File contents:"
+          Get-Content windows-test.txt
+
+      - name: Run Windows-specific commands
+        run: |
+          Write-Host "Running Windows-specific commands..."
+          Write-Host "Current user: $env:USERNAME"
+          Write-Host "Current directory: $pwd"
+          Write-Host "Environment info:"
+          Write-Host "Processor: $env:PROCESSOR_IDENTIFIER"
+
+  macos-job:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Display macOS system information
+        run: |
+          echo "================================"
+          echo "macOS System Information"
+          echo "================================"
+          echo "Operating System Details:"
+          uname -a
+          echo ""
+          echo "macOS Version:"
+          sw_vers
+          echo ""
+          echo "Testing by: Alen George (991716469)"
+
+      - name: Create and display test file
+        run: |
+          echo "================================"
+          echo "Creating macOS Test File"
+          echo "================================"
+          echo "Hello from macOS!" > macos-test.txt
+          echo "Student: Alen George" >> macos-test.txt
+          echo "Student ID: 991716469" >> macos-test.txt
+          echo "Platform: macOS" >> macos-test.txt
+          echo ""
+          echo "File contents:"
+          cat macos-test.txt
+
+      - name: Run macOS-specific commands
+        run: |
+          echo "Running macOS-specific commands..."
+          echo "Current user: $(whoami)"
+          echo "Current directory: $(pwd)"
+          echo "System info:"
+          system_profiler SPSoftwareDataType | grep "System Version"
